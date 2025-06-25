@@ -10,42 +10,9 @@ Final Status: The infrastructure is production-ready. The po-bidder application 
 2. System Architecture
 The solution is composed of two main environments: the Ingress/Proxy Layer and the Compute/Application Layer.
 2.1. High-Level Architecture Diagram
-Generated mermaid
-graph TD
-    subgraph Internet
-        A[Google AdX Servers]
-    end
 
-    subgraph "Traefik Ingress Layer (EC2 Instance: ip-172-31-82-69)"
-        B(DNS: us-east.googleadx.fraudfree.net) --> C{Traefik Proxy};
-        C -- Manages SSL --> D[Let's Encrypt];
-    end
+![image](https://github.com/user-attachments/assets/bdd04ddb-9264-42b6-b5f9-b543fe1f3c30)
 
-    subgraph "AWS VPC"
-        C --> E[AWS Network Load Balancer (NLB)];
-    end
-
-    subgraph "Amazon EKS Cluster (6 Nodes)"
-        E --> F[K8s Service: po-bidder];
-        F --> G1[Pod: po-bidder-1];
-        F --> G2[Pod: po-bidder-2];
-        F --> G3[Pod: po-bidder-n];
-        G1 --> H((Databases & Cache));
-        G2 --> H;
-        G3 --> H;
-    end
-
-    subgraph "External Dependencies"
-        H;
-        I[Production Metrics Server / Grafana];
-        G1 --> I;
-        G2 --> I;
-        G3 --> I;
-    end
-
-    A -- "POST /" --> B;
-Use code with caution.
-Mermaid
 2.2. Component Breakdown
 Component	Technology	Location	Responsibility
 Ingress Proxy	Traefik v3.0	EC2 Instance	Handles public traffic, terminates TLS (SSL), rewrites request paths, and forwards to the backend.
