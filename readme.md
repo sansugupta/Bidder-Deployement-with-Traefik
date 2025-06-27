@@ -25,6 +25,7 @@ The architecture is logically separated into two primary layers: the **Ingress/P
 
 ### 2.1. High-Level Architecture Diagram
 
+```mermaid
 graph TD
     subgraph Internet
         A[Google AdX Servers]
@@ -53,7 +54,7 @@ graph TD
         G3 --> I
     end
     A -- POST / --> B
-
+```
 ### 2.2. Component Breakdown
 
 | Component | Technology | Location | Core Responsibility |
