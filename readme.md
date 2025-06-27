@@ -25,35 +25,34 @@ The architecture is logically separated into two primary layers: the **Ingress/P
 
 ### 2.1. High-Level Architecture Diagram
 
-```mermaid
 graph TD
-    subgraph "Internet"
+    subgraph Internet
         A[Google AdX Servers]
     end
-
-    subgraph "Ingress Layer (EC2 Instance: ip-172-31-82-69)"
-        B(DNS: us-east.googleadx.fraudfree.net) --> C{Traefik v3 Reverse Proxy};
-        C -- "Manages SSL/TLS" --> D[Let's Encrypt CA];
+    subgraph Traefik Ingress Layer
+        B(DNS: us-east.googleadx.fraudfree.net) --> C{Traefik Proxy}
+        C -- SSL --> D[Let's Encrypt]
     end
-
-    subgraph "AWS VPC (us-east-1)"
-        C -- "Forwards HTTP traffic" --> E[AWS Network Load Balancer (NLB)];
+    subgraph AWS VPC
+        C --> E[AWS NLB]
     end
-
-    subgraph "Compute Layer: Amazon EKS Cluster"
-        E -- "Distributes traffic to Nodes" --> F[K8s Service: po-bidder];
-        F -- "Selects Pods via Labels" --> G1[Pod: po-bidder-1];
-        F --> G2[Pod: po-bidder-2];
-        F --> G3[Pod: po-bidder-n];
+    subgraph Amazon EKS Cluster
+        E --> F[K8s Service: po-bidder]
+        F --> G1[Pod: po-bidder-1]
+        F --> G2[Pod: po-bidder-2]
+        F --> G3[Pod: po-bidder-n]
+        G1 --> H((Databases & Cache))
+        G2 --> H
+        G3 --> H
     end
-    
-    subgraph "Backend Services & Dependencies"
-         G1 & G2 & G3 --> H((Databases & Cache <br> Redis, RabbitMQ, MySQL));
-         G1 & G2 & G3 --> I[Monitoring Stack <br> Prometheus / Grafana];
+    subgraph External Dependencies
+        H
+        I[Prometheus/Grafana]
+        G1 --> I
+        G2 --> I
+        G3 --> I
     end
-
-    A -- "1. HTTPS POST /" --> B;
-```
+    A -- POST / --> B
 
 ### 2.2. Component Breakdown
 
